@@ -6,7 +6,7 @@ using Random = UnityEngine.Random; 		//Tells Random to use the Unity Engine rand
 namespace Completed
 	
 {
-	
+	[Serializable]
 	public class BoardManager : MonoBehaviour
 	{
 		// Using Serializable allows us to embed a class with sub properties in the inspector.
@@ -27,19 +27,27 @@ namespace Completed
 		
 		
 		public int columns = 8; 										//Number of columns in our game board.
-		public int rows = 8;											//Number of rows in our game board.
+		public int rows = 8;                                            //Number of rows in our game board.
+
+
+		[SerializeField] int playerX, playerY=0;
+		[SerializeField] int exitX, exitY=7;
+
 		public Count wallCount = new Count (5, 9);						//Lower and upper limit for our random number of walls per level.
 		public Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
 		public GameObject exit;											//Prefab to spawn for exit.
 		public GameObject[] floorTiles;									//Array of floor prefabs.
 		public GameObject[] wallTiles;									//Array of wall prefabs.
-		public GameObject[] foodTiles;									//Array of food prefabs.
+		public GameObject[] foodTiles;                                  //Array of food prefabs.
+		public int enemyNumber = 0;
 		public GameObject[] enemyTiles;									//Array of enemy prefabs.
 		public GameObject[] outerWallTiles;								//Array of outer tile prefabs.
 		
 		private Transform boardHolder;									//A variable to store a reference to the transform of our Board object.
 		private List <Vector3> gridPositions = new List <Vector3> ();	//A list of possible locations to place tiles.
-		
+		private List <Vector3> playerPositions = new List <Vector3> (); //A list of possible locations to place tiles.
+
+
 		
 		//Clears our list gridPositions and prepares it to generate a new board.
 		void InitialiseList ()
@@ -54,11 +62,76 @@ namespace Completed
 				for(int y = 1; y < rows-1; y++)
 				{
 					//At each index add a new Vector3 to our list with the x and y coordinates of that position.
+					//--print(new Vector3(x, y, 0f));
 					gridPositions.Add (new Vector3(x, y, 0f));
+				}
+			}
+			
+			for(int x = 0; x < columns; x++)
+			{
+				//Within each column, loop through y axis (rows).
+				for(int y = 0; y < rows; y++)
+				{
+					//At each index add a new Vector3 to our list with the x and y coordinates of that position.
+					if (x == 0 || y == 0 || x == columns - 1 || y == rows - 1)
+					{
+						//--print(new Vector3(x, y, 0f));
+						playerPositions.Add(new Vector3(x, y, 0f));
+					}
+					
 				}
 			}
 		}
 		
+		void setPlayerAndExitPosition()
+		{
+
+			playerX = Mathf.Clamp(playerX, 0, columns-1);
+			playerY = Mathf.Clamp(playerY, 0, rows-1);
+
+			exitX = Mathf.Clamp(exitX, 0, columns-1);
+			exitY = Mathf.Clamp(exitX, 0, rows-1);
+
+			print(playerX+"  "+ playerY);
+			print(exitX + "  "+ exitY);
+			GameObject playerPrefab = GameObject.Find("Player");
+
+			if (playerX == exitX && playerY == exitY)
+			{
+				Debug.LogWarning("Invalid Player & Exit Position cannot be same: Set to deafult");
+				playerPrefab.transform.position = new Vector2(0, 0);
+				Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
+
+				return;
+			}
+
+			if ((playerX==0||(playerX==columns-1)|| playerY == 0 || (playerY == rows - 1))&& !(playerX == exitX && playerY == exitY))
+			{
+				playerPrefab.transform.position = new Vector2(playerX, playerY);
+			}
+			else
+			{
+				Debug.LogWarning("Invalid Player Position: Set to deafult");
+				playerX = 0;
+				playerY = 0;
+				playerPrefab.transform.position = new Vector2(playerX, playerY);
+
+			}
+
+			if ((exitX == 0||(exitX == columns-1)|| exitY == 0 || (exitY == rows - 1))&& !(playerX == exitX && playerY == exitY))
+			{
+				Instantiate(exit, new Vector3(exitX, exitY, 0f), Quaternion.identity);
+			}
+			else
+			{
+				Debug.LogWarning("Invalid Exit Position: Set to deafult");
+				exitX = columns - 1;
+				exitY = rows - 1;
+				Instantiate(exit, new Vector3(exitX, exitY, 0f), Quaternion.identity);
+			}
+
+
+		}
 		
 		//Sets up the outer walls and floor (background) of the game board.
 		void BoardSetup ()
@@ -105,6 +178,20 @@ namespace Completed
 			//Return the randomly selected Vector3 position.
 			return randomPosition;
 		}
+		Vector3 RandomPlayerPosition ()
+		{
+			//Declare an integer randomIndex, set it's value to a random number between 0 and the count of items in our List gridPositions.
+			int randomIndex = Random.Range (0, playerPositions.Count);
+			
+			//Declare a variable of type Vector3 called randomPosition, set it's value to the entry at randomIndex from our List gridPositions.
+			Vector3 randomPosition = playerPositions[randomIndex];
+
+			//Remove the entry at randomIndex from the list so that it can't be re-used.
+			playerPositions.RemoveAt (randomIndex);
+			
+			//Return the randomly selected Vector3 position.
+			return randomPosition;
+		}
 		
 		
 		//LayoutObjectAtRandom accepts an array of game objects to choose from along with a minimum and maximum range for the number of objects to create.
@@ -144,13 +231,15 @@ namespace Completed
 			LayoutObjectAtRandom (foodTiles, foodCount.minimum, foodCount.maximum);
 			
 			//Determine number of enemies based on current level number, based on a logarithmic progression
-			int enemyCount = (int)Mathf.Log(level, 2f);
+			//--int enemyCount = (int)Mathf.Log(level, 2f);
+			int enemyCount = enemyNumber;
 			
 			//Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
 			LayoutObjectAtRandom (enemyTiles, enemyCount, enemyCount);
-			
+
 			//Instantiate the exit tile in the upper right hand corner of our game board
-			Instantiate (exit, new Vector3 (columns - 1, rows - 1, 0f), Quaternion.identity);
+			//--Instantiate (exit, new Vector3 (columns - 1, rows - 1, 0f), Quaternion.identity);
+			setPlayerAndExitPosition();
 		}
 	}
 }
