@@ -13,7 +13,7 @@ namespace Completed
 		public float levelStartDelay = 2f;						//Time to wait before starting level, in seconds.
 		public float turnDelay = 0.1f;							//Delay between each Player turn.
 		public int playerFoodPoints = 100;                      //Starting value for Player food points.
-		public int currentFoodCount = 0;
+		internal int currentFoodCount = 0;
 		public int maxFoodCap = 2;                            //Starting value for Player food points.
 		public string foodCapMessage="Reached to maximum food capacity";
 		public static GameManager instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
@@ -25,12 +25,16 @@ namespace Completed
 		List<BoardManager> LevelBoardList;
 		
 		private Text levelText;									//Text to display current level number.
+		private Text scoreText;									//Text to display current level number.
 		private GameObject levelImage;							//Image to block out level as levels are being set up, background for levelText.
 		private BoardManager boardScript;						//Store a reference to our BoardManager which will set up the level.
+		private SavePrefData savePrefScript;						//Store a reference to our BoardManager which will set up the level.
 		private List<Enemy> enemies;							//List of all Enemy units, used to issue them move commands.
 		private bool enemiesMoving;								//Boolean to check if enemies are moving.
-		private bool doingSetup = true;							//Boolean to check if we're setting up board, prevent Player from moving during setup.
-		
+		private bool doingSetup = true;                         //Boolean to check if we're setting up board, prevent Player from moving during setup.
+
+		internal bool isGameWin = false;
+		internal bool isDead = false;
 		
 		
 		//Awake is always called before any Start functions
@@ -53,10 +57,13 @@ namespace Completed
 			
 			//Assign enemies to a new List of Enemy objects.
 			enemies = new List<Enemy>();
-			
+
+			//Get a component reference to the attached SavePrefData script
+			savePrefScript = GetComponent<SavePrefData>();
+
 			//Get a component reference to the attached BoardManager script
 			//--boardScript = GetComponent<BoardManager>();
-			
+
 			//Call the InitGame function to initialize the first level 
 			InitGame();
 		}
@@ -73,36 +80,57 @@ namespace Completed
         //This is called each time a scene is loaded.
         static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            instance.level++;
-            instance.InitGame();
+			print("OnSceneLoaded " + instance.level);
+			instance.level++;
+			instance.InitGame();
         }
 
 		
 		//Initializes the game for each level.
 		void InitGame()
 		{
-			if(level> LevelBoardList.Count)
-			{
-				level = 1;
-			}
+			print("Init=" + level);
+			//if(level> LevelBoardList.Count)
+			//{
+			//	level = 1;
+			//}
 			
+
+			//Get a reference to our image LevelImage by finding it by name.
+			levelImage = GameObject.Find("LevelImage");
+
+			//Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
+			levelText = GameObject.Find("LevelText").GetComponent<Text>();
+			
+			scoreText = GameObject.Find("ScoreBoard").GetComponent<Text>();
+
+
+			if (GameWin())
+			{
+				level--;
+				GameOver();
+				return;
+			}
+			//else
+			//{
+			//	instance.level++;
+			//}
+
 			boardScript = LevelBoardList[level-1].GetComponent<BoardManager>();
 
 			//While doingSetup is true the player can't move, prevent player from moving while title card is up.
 			doingSetup = true;
-			
-			//Get a reference to our image LevelImage by finding it by name.
-			levelImage = GameObject.Find("LevelImage");
-			
-			//Get a reference to our text LevelText's text component by finding it by name and calling GetComponent.
-			levelText = GameObject.Find("LevelText").GetComponent<Text>();
-			
+
 			//Set the text of levelText to the string "Day" and append the current level number.
 			levelText.text = "Day " + level;
-			
+
+			scoreText.text = "";
+
+
 			//Set levelImage to active blocking player's view of the game board during setup.
-			levelImage.SetActive(true);
-			
+			if(levelImage)
+				levelImage.SetActive(true);
+
 			//Call the HideLevelImage function with a delay in seconds of levelStartDelay.
 			Invoke("HideLevelImage", levelStartDelay);
 			
@@ -145,13 +173,50 @@ namespace Completed
 			enemies.Add(script);
 		}
 		
-		
+		public bool GameWin()
+		{
+			if (level > LevelBoardList.Count)
+			{
+				isGameWin = true;
+			}
+			else
+			{
+				isGameWin = false;
+			}
+
+			return isGameWin;
+		}
+
+		void saveScore()
+		{
+			int prefVal = savePrefScript.loadPrefs(SavePrefData.savePrefInstance.scoreKey);
+
+			if (prefVal < level)
+				SavePrefData.savePrefInstance.SavePrefs(SavePrefData.savePrefInstance.scoreKey, level);
+		}
 		//GameOver is called when the player reaches 0 food points
 		public void GameOver()
 		{
-			//Set levelText to display number of levels passed and game over message
-			levelText.text = "After " + level + " days, you starved.";
-			
+
+			print("GameOver " + level);
+
+			saveScore();
+
+			int val = savePrefScript.loadPrefs(SavePrefData.savePrefInstance.scoreKey);
+
+			if (isGameWin)
+			{
+				levelText.text = "You Win !!!";
+			}
+			else if(isDead)
+			{
+				//Set levelText to display number of levels passed and game over message
+				levelText.text = "After " + level + " days, you starved.";
+			}
+
+
+			scoreText.text = "Score Board:\n\n Score: "+(level)+" Days. \n Best: "+ val + " Days.";
+
 			//Enable black background image gameObject.
 			levelImage.SetActive(true);
 			

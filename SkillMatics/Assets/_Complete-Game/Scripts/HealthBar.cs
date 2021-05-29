@@ -18,7 +18,7 @@ namespace Completed
         {
             healthInstance = this;
             int maxFoodVal=player.GetComponent<Player>().food;
-            print(maxFoodVal);
+            //--print(maxFoodVal);
             //int maxVal = player.GetComponent<Player>();
             SetMaxHealth((float)maxFoodVal);
         }

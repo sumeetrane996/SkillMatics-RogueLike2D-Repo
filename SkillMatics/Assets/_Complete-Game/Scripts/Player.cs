@@ -57,6 +57,8 @@ namespace Completed
 			//When Player object is disabled, store the current local food total in the GameManager so it can be re-loaded in next level.
 			GameManager.instance.playerFoodPoints = food;
 			GameManager.instance.maxFoodCap = (maximumCap - currentCap);
+			
+			//--CheckIfGameOver();
 		}
 		
 		
@@ -262,6 +264,7 @@ namespace Completed
 		//It takes a parameter loss which specifies how many points to lose.
 		public void LoseFood (int loss)
 		{
+			print("LoseFood");
 			//Set the trigger for the player animator to transition to the playerHit animation.
 			animator.SetTrigger ("playerHit");
 			
@@ -279,18 +282,27 @@ namespace Completed
 		//CheckIfGameOver checks if the player is out of food points and if so, ends the game.
 		private void CheckIfGameOver ()
 		{
+			print("CheckIfGameOver");
 			//Check if food point total is less than or equal to zero.
-			if (food <= 0) 
+			if (food <= 0&& !GameManager.instance.isGameWin) 
 			{
 				//Call the PlaySingle function of SoundManager and pass it the gameOverSound as the audio clip to play.
-				SoundManager.instance.PlaySingle (gameOverSound);
-				
+				SoundManager.instance.PlaySingle(gameOverSound);
+
 				//Stop the background music.
 				SoundManager.instance.musicSource.Stop();
-				
+
+
+				GameManager.instance.isDead=true;
+				GameManager.instance.isGameWin=false;
 				//Call the GameOver function of GameManager.
-				GameManager.instance.GameOver ();
+				GameManager.instance.GameOver();
+
 			}
+
+			//Call the GameOver function of GameManager.
+			//--GameManager.instance.GameOver();
+			
 		}
 	}
 }

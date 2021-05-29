@@ -13,35 +13,53 @@ namespace Completed
 		[Serializable]
 		public class Count
 		{
-			public int minimum; 			//Minimum value for our Count class.
-			public int maximum; 			//Maximum value for our Count class.
-			
-			
+			[SerializeField] internal int minimum;             //Minimum value for our Count class.
+			[SerializeField] internal int maximum;             //Maximum value for our Count class.
+
+
 			//Assignment constructor.
-			public Count (int min, int max)
+			public Count(int min, int max)
 			{
 				minimum = min;
 				maximum = max;
 			}
 		}
 		
-		
-		public int columns = 8; 										//Number of columns in our game board.
-		public int rows = 8;                                            //Number of rows in our game board.
+		[Serializable]
+		public class Position
+		{
+			[SerializeField] internal int xVal;             //Minimum value for our Count class.
+			[SerializeField] internal int yVal;             //Maximum value for our Count class.
 
 
-		[SerializeField] int playerX, playerY=0;
-		[SerializeField] int exitX, exitY=7;
+			//Assignment constructor.
+			public Position(int x, int y)
+			{
+				xVal = x;
+				yVal = y;
+			}
+		}
 
-		public Count wallCount = new Count (5, 9);						//Lower and upper limit for our random number of walls per level.
-		public Count foodCount = new Count (1, 5);						//Lower and upper limit for our random number of food items per level.
-		public GameObject exit;											//Prefab to spawn for exit.
-		public GameObject[] floorTiles;									//Array of floor prefabs.
-		public GameObject[] wallTiles;									//Array of wall prefabs.
-		public GameObject[] foodTiles;                                  //Array of food prefabs.
-		public int enemyNumber = 0;
-		public GameObject[] enemyTiles;									//Array of enemy prefabs.
-		public GameObject[] outerWallTiles;								//Array of outer tile prefabs.
+
+		[SerializeField] int columns = 8;                                         //Number of columns in our game board.
+		[SerializeField] int rows = 8;                                            //Number of rows in our game board.
+
+//		[Header("Player Position")]
+		[SerializeField] Position PlayerPos = new Position(0, 0);
+		private int playerX, playerY=0;
+//		[Header("Exit Position")]
+		[SerializeField] Position ExitPos = new Position(7, 7);
+		private int exitX, exitY=7;
+
+		[SerializeField] Count wallCount = new Count (5, 9);                        //Lower and upper limit for our random number of walls per level.
+		[SerializeField] Count foodCount = new Count (1, 5);                        //Lower and upper limit for our random number of food items per level.
+		[SerializeField] GameObject exit;                                           //Prefab to spawn for exit.
+		[SerializeField] GameObject[] floorTiles;                                   //Array of floor prefabs.
+		[SerializeField] GameObject[] wallTiles;                                    //Array of wall prefabs.
+		[SerializeField] GameObject[] foodTiles;                                  //Array of food prefabs.
+		[SerializeField] int enemyNumber = 0;
+		[SerializeField] GameObject[] enemyTiles;                                   //Array of enemy prefabs.
+		[SerializeField] GameObject[] outerWallTiles;								//Array of outer tile prefabs.
 		
 		private Transform boardHolder;									//A variable to store a reference to the transform of our Board object.
 		private List <Vector3> gridPositions = new List <Vector3> ();	//A list of possible locations to place tiles.
@@ -86,14 +104,14 @@ namespace Completed
 		void setPlayerAndExitPosition()
 		{
 
-			playerX = Mathf.Clamp(playerX, 0, columns-1);
-			playerY = Mathf.Clamp(playerY, 0, rows-1);
+			playerX = Mathf.Clamp(PlayerPos.xVal, 0, columns-1);
+			playerY = Mathf.Clamp(PlayerPos.yVal, 0, rows-1);
 
-			exitX = Mathf.Clamp(exitX, 0, columns-1);
-			exitY = Mathf.Clamp(exitX, 0, rows-1);
+			exitX = Mathf.Clamp(ExitPos.xVal, 0, columns-1);
+			exitY = Mathf.Clamp(ExitPos.yVal, 0, rows-1);
 
-			print(playerX+"  "+ playerY);
-			print(exitX + "  "+ exitY);
+			//print(playerX+"  "+ playerY);
+			//print(exitX + "  "+ exitY);
 			GameObject playerPrefab = GameObject.Find("Player");
 
 			if (playerX == exitX && playerY == exitY)
