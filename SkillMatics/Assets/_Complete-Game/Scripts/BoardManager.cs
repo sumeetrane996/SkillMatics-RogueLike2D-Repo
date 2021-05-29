@@ -44,7 +44,7 @@ namespace Completed
 		[SerializeField] int columns = 8;                                         //Number of columns in our game board.
 		[SerializeField] int rows = 8;                                            //Number of rows in our game board.
 
-//		[Header("Player Position")]
+		[Header("Player & Exit are positioned in grid format on Board")]
 		[SerializeField] Position PlayerPos = new Position(0, 0);
 		private int playerX, playerY=0;
 //		[Header("Exit Position")]

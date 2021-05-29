@@ -9,20 +9,20 @@ namespace Completed
 	
 	public class GameManager : MonoBehaviour
 	{
-		
-		public float levelStartDelay = 2f;						//Time to wait before starting level, in seconds.
-		public float turnDelay = 0.1f;							//Delay between each Player turn.
-		public int playerFoodPoints = 100;                      //Starting value for Player food points.
+
+		[SerializeField] internal float levelStartDelay = 2f;                        //Time to wait before starting level, in seconds.
+		[SerializeField] internal float turnDelay = 0.1f;                            //Delay between each Player turn.
+		[SerializeField] internal int playerFoodPoints = 100;                      //Starting value for Player food points.
 		internal int currentFoodCount = 0;
-		public int maxFoodCap = 2;                            //Starting value for Player food points.
-		public string foodCapMessage="Reached to maximum food capacity";
+		[SerializeField] internal int maxFoodCap = 2;                            //Starting value for Player food points.
+		[SerializeField] internal string foodCapMessage ="Reached to maximum food capacity";
 		public static GameManager instance = null;				//Static instance of GameManager which allows it to be accessed by any other script.
-		[HideInInspector] public bool playersTurn = true;       //Boolean to check if it's players turn, hidden in inspector but public.
+		[HideInInspector] internal bool playersTurn = true;       //Boolean to check if it's players turn, hidden in inspector but public.
 
 		public int level = 1;                                   //Current level number, expressed in game as "Day 1".
 
 		[SerializeField]
-		List<BoardManager> LevelBoardList;
+		internal List<BoardManager> LevelBoardList;
 		
 		private Text levelText;									//Text to display current level number.
 		private Text scoreText;									//Text to display current level number.

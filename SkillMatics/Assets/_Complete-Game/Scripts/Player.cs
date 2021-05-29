@@ -8,23 +8,23 @@ namespace Completed
 	//Player inherits from MovingObject, our base class for objects that can move, Enemy also inherits from this.
 	public class Player : MovingObject
 	{
-		public float restartLevelDelay = 1f;		//Delay time in seconds to restart level.
-		public int pointsPerFood = 10;				//Number of points to add to player food points when picking up a food object.
-		public int pointsPerSoda = 20;				//Number of points to add to player food points when picking up a soda object.
-		public int wallDamage = 1;					//How much damage a player does to a wall when chopping it.
-		public Text foodText;						//UI Text to display current player food total.
-		public AudioClip moveSound1;				//1 of 2 Audio clips to play when player moves.
-		public AudioClip moveSound2;				//2 of 2 Audio clips to play when player moves.
-		public AudioClip eatSound1;					//1 of 2 Audio clips to play when player collects a food object.
-		public AudioClip eatSound2;					//2 of 2 Audio clips to play when player collects a food object.
-		public AudioClip drinkSound1;				//1 of 2 Audio clips to play when player collects a soda object.
-		public AudioClip drinkSound2;				//2 of 2 Audio clips to play when player collects a soda object.
-		public AudioClip gameOverSound;				//Audio clip to play when player dies.
+		[SerializeField] internal float restartLevelDelay = 1f;     //Delay time in seconds to restart level.
+		[SerializeField] internal int pointsPerFood = 10;               //Number of points to add to player food points when picking up a food object.
+		[SerializeField] internal int pointsPerSoda = 20;               //Number of points to add to player food points when picking up a soda object.
+		[SerializeField] internal int wallDamage = 1;                   //How much damage a player does to a wall when chopping it.
+		[SerializeField] internal Text foodText;                        //UI Text to display current player food total.
+		[SerializeField] internal AudioClip moveSound1;             //1 of 2 Audio clips to play when player moves.
+		[SerializeField] internal AudioClip moveSound2;             //2 of 2 Audio clips to play when player moves.
+		[SerializeField] internal AudioClip eatSound1;                  //1 of 2 Audio clips to play when player collects a food object.
+		[SerializeField] internal AudioClip eatSound2;                  //2 of 2 Audio clips to play when player collects a food object.
+		[SerializeField] internal AudioClip drinkSound1;                //1 of 2 Audio clips to play when player collects a soda object.
+		[SerializeField] internal AudioClip drinkSound2;                //2 of 2 Audio clips to play when player collects a soda object.
+		[SerializeField] internal AudioClip gameOverSound;				//Audio clip to play when player dies.
 		
-		private Animator animator;					//Used to store a reference to the Player's animator component.
-		public int food;                           //Used to store player food points total during level.
-		public int maximumCap;                           //Used to store player food points total during level.
-		public int currentCap;                           //Used to store player food points total during level.
+		private Animator animator;                  //Used to store a reference to the Player's animator component.
+		[SerializeField] internal int food;                           //Used to store player food points total during level.
+		[SerializeField] internal int maximumCap;                           //Used to store player food points total during level.
+		[SerializeField] internal int currentCap;                           //Used to store player food points total during level.
 		private string maxCapMsg = "";
 #if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
         private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
