@@ -7,9 +7,9 @@
 -With this designer can add as many custom levels
 
 ##Task-2
--In prefab 'BoardLevel_1' with added BoardManager Script you can specify enemy count in each level through inspector.
--Position of Player & Exit can be specified through inspector at each level.
--If position of Player & Exit is inValid or same it would throw a warning & reset to default position
+1. In prefab 'BoardLevel_1' with added BoardManager Script you can specify enemy count in each level through inspector.
+2. Position of Player & Exit can be specified through inspector at each level.
+3. If position of Player & Exit is inValid or same it would throw a warning & reset to default position
 
 ##Task-3
 -The Food Cap Functionality has been added on GameManager with MaxCapacity & Message field in inspector.
